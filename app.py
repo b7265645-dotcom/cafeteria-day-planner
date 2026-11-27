@@ -17,12 +17,12 @@ st.title("하루 식단 에이전트")
 
 @st.cache_data
 def load_inputs(meals_version, products_version):
-    meals = pd.read_csv(ROOT / "data/meals.csv.gz", low_memory=False)
+    meals = pd.read_csv(ROOT / "data/meals.csv", low_memory=False)
     names = {item for raw in meals.menu_json.unique() for item in json.loads(raw)}
     return meals, load_products(), names
 
 
-meals, products, names = load_inputs((ROOT / "data/meals.csv.gz").stat().st_mtime_ns,
+meals, products, names = load_inputs((ROOT / "data/meals.csv").stat().st_mtime_ns,
                               DEFAULT_PATH.stat().st_mtime_ns)
 with st.sidebar:
     st.radio("추천 기준", ["영양 우선", "가성비 우선"], key="mode")
@@ -181,3 +181,7 @@ for role, message in st.session_state.messages:
     with st.chat_message(role):
         st.markdown(message)
 st.chat_input("식단이나 원하는 조건을 말해 줘", key="request", on_submit=submit)
+with st.expander("데이터와 가격 기준"):
+    st.write("세 끼는 연구용 원본 식단의 1인분이에요. 금액은 10원 단위로 반올림해 보여줘요. 학식 금액은 재료비와 운영비를 반영한 추정원가예요.")
+    st.write("GS25는 Doinglab 영양 정보와 공개 참고가를 사용해요. 매장별 판매 여부와 현재 가격은 조사 범위 밖이에요.")
+    st.write("‘단백질 많이’는 참고 기준에 15g을 더하는 프로젝트 설정이에요. 영양 계산은 열량·탄수화물·단백질·지방·나트륨을 사용해요.")
